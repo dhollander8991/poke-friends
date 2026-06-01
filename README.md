@@ -20,7 +20,7 @@ A production-ready multiplayer Texas Hold'em poker game built with Phaser 3, Nod
 |---|---|
 | 🃏 Full poker rules | Blinds, multi-street betting, side pots, 9-hand rank evaluator |
 | 🌐 Real-time multiplayer | Up to 9 players per table, reconnect after drop |
-| 🤖 AI odds assistant | Claude `claude-sonnet-4-20250514` — win %, pot odds, fold/call/raise rec |
+| 🤖 AI odds assistant | Claude `claude-sonnet-4-6` — win %, pot odds, fold/call/raise rec |
 | 💰 Chip store | Stripe Checkout — 3 one-time bundles + VIP subscription ($4.99/mo) |
 | 🎁 Daily bonus | 200 free chips every 24 hours |
 | 🎰 Demo mode | Instant play with 4 server-side AI bots — no other players needed |
@@ -175,7 +175,7 @@ pnpm format       # prettier --write
 
 ## AI Odds Assistant
 
-- Powered by Anthropic `claude-sonnet-4-20250514`
+- Powered by Anthropic `claude-sonnet-4-6` (structured JSON output via `messages.parse`)
 - Appears as "🤖 Ask AI" button during your turn
 - Returns: win probability gauge, pot odds, fold/call/raise recommendation, reasoning, confidence level
 - Rate limited: 1 request per 5 seconds per player

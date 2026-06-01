@@ -1,19 +1,33 @@
 import type { Request, Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { jsonSchemaOutputFormat } from '@anthropic-ai/sdk/helpers/json-schema';
 import type { Card } from '@texas-holdem/shared';
 import { config } from '../config.js';
 import { sessionStore } from '../store/SessionStore.js';
 import type { AuthRequest } from '../auth/middleware.js';
 
-const SYSTEM_PROMPT = `You are a Texas Hold'em poker odds assistant. Analyze the given situation and respond ONLY with a valid JSON object — no markdown fences, no explanation text outside the JSON. Use exactly this shape:
-{"winProbability":0.65,"potOdds":"4.5:1","recommendation":"call","reasoning":"Your two pair has strong equity. Pot odds of 4.5:1 justify calling the bet.","confidence":"medium"}
-
-Rules:
+const SYSTEM_PROMPT = `You are a Texas Hold'em poker odds assistant. Analyze the given situation and return your analysis.
 - winProbability: 0–1 float (your estimated equity vs remaining opponents)
 - potOdds: "X:1" string (pot size divided by call amount)
-- recommendation: "fold" | "call" | "raise"
+- recommendation: fold | call | raise
 - reasoning: 1–2 sentence explanation referencing the specific cards and situation
-- confidence: "low" | "medium" | "high" (how reliable this estimate is given available info)`;
+- confidence: low | medium | high (how reliable this estimate is given available info)`;
+
+// Structured-output schema — the model is constrained to this shape, so the
+// response is guaranteed-parseable JSON (no markdown-fence stripping, no
+// JSON.parse on free-form text). additionalProperties:false is required.
+const ANALYSIS_SCHEMA = {
+  type: 'object',
+  properties: {
+    winProbability: { type: 'number' },
+    potOdds: { type: 'string' },
+    recommendation: { type: 'string', enum: ['fold', 'call', 'raise'] },
+    reasoning: { type: 'string' },
+    confidence: { type: 'string', enum: ['low', 'medium', 'high'] },
+  },
+  required: ['winProbability', 'potOdds', 'recommendation', 'reasoning', 'confidence'],
+  additionalProperties: false,
+} as const;
 
 function cardLabel(c: Card) {
   const suitSym: Record<string, string> = { hearts:'♥', diamonds:'♦', clubs:'♣', spades:'♠' };
@@ -68,22 +82,22 @@ export async function handleAiAnalyze(req: Request, res: Response) {
   try {
     sessionStore.recordAiQuery(playerId);
 
-    const response = await getAnthropic().messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 256,
+    const message = await getAnthropic().messages.parse({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 512,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMsg }],
+      output_config: { format: jsonSchemaOutputFormat(ANALYSIS_SCHEMA) },
     });
 
-    const block = response.content[0];
-    if (block.type !== 'text') throw new Error('Unexpected non-text response');
+    const parsed = message.parsed_output;
+    if (!parsed) throw new Error('Model returned no parseable analysis');
 
-    const parsed = JSON.parse(block.text.trim()) as AnalyzeResponse;
-    parsed.queriesRemaining = sessionStore.aiQueriesRemaining(playerId);
-
-    res.json(parsed);
+    res.json({ ...parsed, queriesRemaining: sessionStore.aiQueriesRemaining(playerId) } satisfies AnalyzeResponse);
   } catch (err) {
-    console.error('[ai] Analysis failed:', err);
+    // Surface the real cause server-side; keep the client message generic.
+    const detail = err instanceof Anthropic.APIError ? `${err.status} ${err.message}` : String(err);
+    console.error('[ai] Analysis failed:', detail);
     res.status(500).json({ error: 'AI analysis failed' });
   }
 }

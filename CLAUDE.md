@@ -8,7 +8,7 @@
 | Real-time comms | **Socket.IO** | WS with fallbacks, built-in room/namespace support |
 | Auth | **JWT** | Stateless tokens; fits distributed Node.js deployment |
 | Payments | **Stripe** | Industry standard; first-class Node SDK |
-| AI odds assistant | **`claude-sonnet-4-20250514`** | Best reasoning-to-cost ratio for real-time poker advice |
+| AI odds assistant | **`claude-sonnet-4-6`** | Best reasoning-to-cost ratio for real-time poker advice; structured-output JSON (`messages.parse`) |
 | Primary DB | **PostgreSQL** | Relational model suits player/hand/ledger schema |
 | Cache / pub-sub | **Redis** | Session store, leaderboard sorted sets, Socket.IO adapter |
 | Package manager | **pnpm workspaces** | Efficient hoisting, symlinked workspace deps |
