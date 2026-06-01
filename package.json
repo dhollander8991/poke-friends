@@ -1,0 +1,32 @@
+{
+  "name": "pokefriends",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Poke'friends — cartoon multiplayer Texas Hold'em (web + mobile)",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter client dev\"",
+    "build": "pnpm --filter @texas-holdem/shared build && pnpm --filter server build && pnpm --filter client build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "cap:sync": "pnpm --filter client build && npx cap sync",
+    "cap:android": "pnpm cap:sync && npx cap open android",
+    "cap:ios": "pnpm cap:sync && npx cap open ios"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.5.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.2",
+    "sharp": "^0.34.5",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2"
+  }
+}

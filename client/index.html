@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#24100a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Poke'friends — Play Poker with Friends</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%; height: 100%; overflow: hidden;
+        background: #1a0d07;
+        /* warm casino glow behind the letterboxed canvas (desktop) */
+        background: radial-gradient(circle at 50% 35%, #4a2412 0%, #24100a 60%, #140804 100%);
+        font-family: "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-user-select: none; user-select: none;
+        touch-action: none;
+      }
+      /* Full-viewport host. Phaser's Scale manager (FIT + CENTER_BOTH) positions
+         and centres the canvas itself — do NOT add flexbox here, or the double
+         centring desyncs Phaser's pointer math and clicks land on the wrong spot. */
+      #game { position: fixed; inset: 0; }
+      #game canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

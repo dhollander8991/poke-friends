@@ -1,0 +1,26 @@
+# Render Blueprint — game server (Express + Socket.IO).
+# In the Render dashboard: New → Blueprint → pick this repo. It reads this file.
+# Set JWT_SECRET (and any optional keys) in the dashboard; CLIENT_ORIGIN must be
+# your Vercel URL once you have it (comma-separate multiple origins).
+services:
+  - type: web
+    name: pokefriends-server
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true        # Render generates a strong secret
+      - key: CLIENT_ORIGIN
+        sync: false                # set to your https://<app>.vercel.app
+      - key: ANTHROPIC_API_KEY
+        sync: false                # optional — enables the AI assistant
+      - key: STRIPE_SECRET_KEY
+        sync: false                # optional — enables the shop
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false                # optional
