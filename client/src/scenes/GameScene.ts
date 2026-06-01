@@ -563,7 +563,14 @@ export class GameScene extends Phaser.Scene {
     panel.add(badge);
     panel.add(this.add.text(0, 24, r.recommendation.toUpperCase(), gameText(26, css(COL.cream))).setOrigin(0.5));
     panel.add(this.add.text(0, 64, `Pot odds ${r.potOdds} · ${r.confidence}`, gameText(14, css(COL.cream), { strokeThickness: 0 })).setOrigin(0.5));
-    panel.add(this.add.text(0, 96, r.reasoning, gameText(15, css(COL.cream), { strokeThickness: 0, shadow: false })).setOrigin(0.5, 0).setWordWrapWidth(420).setAlign('center'));
+    const reason = this.add.text(0, 96, r.reasoning, gameText(15, css(COL.cream), { strokeThickness: 0, shadow: false })).setOrigin(0.5, 0).setWordWrapWidth(420).setAlign('center');
+    const wrapped = reason.getWrappedText();
+    if (wrapped.length > 3) {
+      const clipped = wrapped.slice(0, 3);
+      clipped[2] = clipped[2].replace(/\s+\S*$/, '') + '…';
+      reason.setText(clipped.join('\n'));
+    }
+    panel.add(reason);
   }
 
   private upgradeMsg(panel: Phaser.GameObjects.Container) {

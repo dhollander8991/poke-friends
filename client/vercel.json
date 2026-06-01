@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "comment": "Used when the Vercel project's Root Directory is set to 'client'. The client depends on the @texas-holdem/shared workspace package and the repo-root pnpm-lock.yaml, so the build must run from the repo root (one level up). Output lands in client/dist, which is './dist' relative to this client root.",
   "installCommand": "cd .. && pnpm install --frozen-lockfile",
   "buildCommand": "cd .. && pnpm --filter @texas-holdem/shared build && pnpm --filter client build",
   "outputDirectory": "dist",
